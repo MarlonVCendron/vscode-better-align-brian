@@ -176,9 +176,10 @@ export class Formatter {
             } else if (char === '}' || char === ')' || char === ']') {
                 currTokenType = TokenType.EndOfBlock;
             } else if (
-                char === '/' &&
-                ((next === '/' && (pos > 0 ? text.charAt(pos - 1) : '') !== ':') || // only `//` but not `://`
-                    next === '*')
+                char === '#' ||
+                (char === '/' &&
+                    ((next === '/' && (pos > 0 ? text.charAt(pos - 1) : '') !== ':') || // only `//` but not `://`
+                        next === '*'))
             ) {
                 currTokenType = TokenType.Comment;
             } else if (char === ',') {
@@ -208,18 +209,19 @@ export class Formatter {
                     char === ':' ||
                     char === '!' ||
                     char === '&' ||
-                    char === '=') // &&
-                // next === '='
+                    char === '=') &&
+                next === '='
             ) {
-                // Changing this so that every operator gets treated as a separate token
                 currTokenType = TokenType.Assignment;
                 nextSeek = third === '=' ? 3 : 2;
+            } else if (char === ':') {
+                currTokenType = TokenType.Assignment;
             } else if (char === '=' && next !== '=') {
                 currTokenType = TokenType.Assignment;
             } else if (char === ':' && next === ':') {
                 currTokenType = TokenType.Word;
                 nextSeek = 2;
-            } else if (char === ':' && next !== ':' || (char === '?' && next === ':')) {
+            } else if ((char === ':' && next !== ':') || (char === '?' && next === ':')) {
                 currTokenType = TokenType.Colon;
             } else {
                 currTokenType = TokenType.Word;
@@ -287,9 +289,9 @@ export class Formatter {
                 // or we will lost symbols like "] } )"
             }
 
-            if (char === '/') {
+            if (char === '/' || char === '#') {
                 // Skip to end if we encounter single line comment
-                if (next === '/') {
+                if (next === '/'|| char === '#') {
                     pos = text.length;
                 } else if (next === '*') {
                     ++pos;
