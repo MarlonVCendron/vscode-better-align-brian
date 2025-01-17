@@ -208,9 +208,10 @@ export class Formatter {
                     char === ':' ||
                     char === '!' ||
                     char === '&' ||
-                    char === '=') &&
-                next === '='
+                    char === '=') // &&
+                // next === '='
             ) {
+                // Changing this so that every operator gets treated as a separate token
                 currTokenType = TokenType.Assignment;
                 nextSeek = third === '=' ? 3 : 2;
             } else if (char === '=' && next !== '=') {
